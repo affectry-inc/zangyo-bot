@@ -120,59 +120,58 @@ controller.hears('^.*残業.*申請.*',['direct_message'],function(bot,message) 
 
 askApprover = function(response, convo) {
   convo.ask("プロマネは誰？ [@xxx]", function(response, convo) {
-    console.log(response.text);
-    convo.say(response.text);
     if (!response.text.match(/^<@[a-zA-Z0-9]*>$/)) {
-      convo.say('@xxx の形式でユーザーを指定してね。');
+      convo.say('@xxx の形式でユーザーを１人指定してね。');
       askApprover(response, convo);
       convo.next();
     } else {
-      var ans = {}
-      ans.id = uuid();
-      ans.approver = response.text
-      askEndTime(response, convo, ans);
+      var zangyo = {}
+      zangyo.id = uuid();
+      zangyo.applied = false;
+      zangyo.approver = response.text;
+      askEndTime(response, convo, zangyo);
       convo.next();
     }
   });
 }
-askEndTime = function(response, convo, ans) {
+askEndTime = function(response, convo, zangyo) {
   convo.ask("何時に終わる？ [HH:MM]", function(response, convo) {
     if (!response.text.match(/^([0-2]?[0-9]):([0-5]?[0-9])$/)) {
-      convo.say('HH:MM の形式で回答してね。');
-      askEndTime(response, convo, ans);
+      convo.say('HH:MM の形式で時間を指定してね。29:59まで指定できるよ。');
+      askEndTime(response, convo, zangyo);
       convo.next();
     } else {
-      ans.endTime = response.text
-      askReason(response, convo, ans);
+      zangyo.endTime = response.text;
+      askReason(response, convo, zangyo);
       convo.next();
     }
   });
 }
-askReason = function(response, convo, ans) {
+askReason = function(response, convo, zangyo) {
   convo.ask("残業する理由は？", function(response, convo) {
-    ans.reason = response.text
+    zangyo.reason = response.text;
     var summary = {
       "text": "この内容で残業申請しますか？",
       "attachments": [
         {
           "text": "申請内容まとめ",
           "fallback": "申請内容のまとめ",
-          "callback_id": "apply-" + ans.id,
+          "callback_id": "apply-" + response.user + '-' + zangyo.id,
           "color": "#36a64f",
           "fields": [
             {
               "title": "承認者",
-              "value": ans.approver,
+              "value": zangyo.approver,
               "short": false
             },
             {
               "title": "終了時間",
-              "value": ans.endTime,
+              "value": zangyo.endTime,
               "short": false
             },
             {
               "title": "残業する理由",
-              "value": ans.reason,
+              "value": zangyo.reason,
               "short": false
             }
           ],
@@ -186,11 +185,29 @@ askReason = function(response, convo, ans) {
               "type": "button",
               "name": "redo",
               "text": "やり直し"
+            },
+            {
+              "type": "button",
+              "name": "cancel",
+              "text": "キャンセル"
             }
           ]
         }
       ]
-    };
+    }
+    controller.storage.users.get(response.user, function(err, user) {
+        if (!user) {
+          user = {
+            id: response.user,
+            zangyos: []
+          }
+        } else if (!user.zangyos) {
+          user.zangyos = [];
+        }
+
+        user.zangyos.push(zangyo);
+        controller.storage.users.save(user);
+    });
     convo.say(summary);
     convo.next();
   });
@@ -199,11 +216,54 @@ askReason = function(response, convo, ans) {
 controller.on('interactive_message_callback', function(bot, message) {
   var ids = message.callback_id.split(/\-/);
   var action = ids[0];
-  var item_id = ids[1];
+  var user_id = ids[1];
+  var item_id = ids[2];
 
   if (action == 'apply') {
-    var applicant_answer = message.actions[0].name;
-    bot.replyInteractive(message, message.actions[0].text + "しました。");
+    var ans = message.actions[0].name;
+    if (ans = 'apply') {
+      controller.storage.users.get(user_id, function(err, user) {
+        var summary = {};
+        for (var x = 0; x < user.zangyos.length; x++) {
+          if (user.zangyos[x].id == item_id) {
+            var zangyo = user.zangyos[x];
+            summary = {
+              "text": "以下の内容で残業申請しました。",
+              "attachments": [
+                {
+                  "text": "申請内容まとめ",
+                  "fallback": "申請内容のまとめ",
+                  "color": "#36a64f",
+                  "fields": [
+                    {
+                      "title": "承認者",
+                      "value": zangyo.approver,
+                      "short": false
+                    },
+                    {
+                      "title": "終了時間",
+                      "value": zangyo.endTime,
+                      "short": false
+                    },
+                    {
+                      "title": "残業する理由",
+                      "value": zangyo.reason,
+                      "short": false
+                    }
+                  ]
+                }
+              ]
+            }
+            break;
+          }
+        }
+        bot.replyInteractive(message, summary);
+      });
+    } else if (ans = 'redo') {
+      bot.startConversation(message, askApprover);
+    } else {
+      bot.replyInteractive(message, "キャンセルしたよ。さっさと帰ろう！");
+    }
   } else if (message.callback_id == "test_button") {
     var users_answer = message.actions[0].name;
     bot.replyInteractive(message, "あなたは「" + users_answer + "」を押しました");
