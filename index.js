@@ -330,6 +330,74 @@ controller.on('interactive_message_callback', function(bot, message) {
         }
       }
     });
+  } else if (action == 'approve') {
+    var ans = message.actions[0].name;
+    controller.storage.users.get(user_id, function(err, user) {
+      for (var x = 0; x < user.zangyos.length; x++) {
+        if (user.zangyos[x].id == item_id) {
+          var zangyo = user.zangyos[x];
+          var summary = {
+            "attachments": [
+              {
+                "text": "申請内容まとめ",
+                "fallback": "申請内容のまとめ",
+                "color": "#36a64f",
+                "fields": [
+                  {
+                    "title": "申請者",
+                    "value": "<@" + zangyo.applicant + ">",
+                    "short": false
+                  },
+                  {
+                    "title": "承認者",
+                    "value": "<@" + zangyo.approver + ">",
+                    "short": false
+                  },
+                  {
+                    "title": "終了時間",
+                    "value": zangyo.endTime,
+                    "short": false
+                  },
+                  {
+                    "title": "残業する理由",
+                    "value": zangyo.reason,
+                    "short": false
+                  }
+                ]
+              }
+            ]
+          }
+          bot.replyInteractive(message, summary);
+          if (ans == 'approve') {
+            user.zangyos[x].approved = true;
+            bot.reply(message, "この申請を承認したよ。");
+            bot.startPrivateConversation({user: zangyo.applicant}, function(err,convo) {
+              if (err) {
+                console.log(err);
+              } else {
+                convo.say(summary);
+                convo.say("この申請が承認されました。");
+                convo.next();
+              }
+            });
+          } else if (ans == 'reject') {
+            user.zangyos[x].approved = false;
+            bot.reply(message, "この申請を却下したよ。");
+            bot.startPrivateConversation({user: zangyo.applicant}, function(err,convo) {
+              if (err) {
+                console.log(err);
+              } else {
+                convo.say(summary);
+                convo.say("この申請が却下されました。");
+                convo.next();
+              }
+            });
+          }
+          controller.storage.users.save(user);
+          break;
+        }
+      }
+    });
   } else if (message.callback_id == "test_button") {
     var users_answer = message.actions[0].name;
     bot.replyInteractive(message, "あなたは「" + users_answer + "」を押しました");
