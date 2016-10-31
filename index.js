@@ -5,6 +5,7 @@
     -> Add the Redirect URI: https://${APP_NAME}.herokuapp.com/oauth
   Deply and run your app on Heroku.
     -> Add Config Vars on the Heroku app setting page: clientId, clientSecret
+    -> Deploy and run on Heroku.
   Set RequestURL on Slack.
     -> Add the RequesteURL of Interactive Message: https://${APP_NAME}.herokuapp.com/slack/receive
 # USE THE APP
