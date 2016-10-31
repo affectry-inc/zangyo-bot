@@ -1,0 +1,25 @@
+{
+  "name": "zangyo-bot",
+  "version": "1.0.0",
+  "description": "Zangyo approval app for slack",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/affectry-inc/zangyo-bot.git"
+  },
+  "keywords": [
+    "slack",
+    "bot",
+    "zangyo",
+    "workflow"
+  ],
+  "author": "xiz-tky",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/affectry-inc/zangyo-bot/issues"
+  },
+  "homepage": "https://github.com/affectry-inc/zangyo-bot#readme"
+}
