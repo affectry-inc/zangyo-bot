@@ -221,7 +221,7 @@ controller.on('interactive_message_callback', function(bot, message) {
 
   if (action == 'apply') {
     var ans = message.actions[0].name;
-    if (ans = 'apply') {
+    if (ans == 'apply') {
       controller.storage.users.get(user_id, function(err, user) {
         var summary = {};
         for (var x = 0; x < user.zangyos.length; x++) {
@@ -259,7 +259,7 @@ controller.on('interactive_message_callback', function(bot, message) {
         }
         bot.replyInteractive(message, summary);
       });
-    } else if (ans = 'redo') {
+    } else if (ans == 'redo') {
       bot.startConversation(message, askApprover);
     } else {
       bot.replyInteractive(message, "キャンセルしたよ。さっさと帰ろう！");
