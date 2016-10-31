@@ -127,6 +127,7 @@ askApprover = function(response, convo) {
     } else {
       var zangyo = {}
       zangyo.id = uuid();
+      zangyo.applicant = response.user;
       zangyo.approver = response.text;
       askEndTime(response, convo, zangyo);
       convo.next();
@@ -160,7 +161,7 @@ askReason = function(response, convo, zangyo) {
           "fields": [
             {
               "title": "申請者",
-              "value": response.user,
+              "value": "<@" + zangyo.applicant + ">",
               "short": false
             },
             {
@@ -239,7 +240,7 @@ controller.on('interactive_message_callback', function(bot, message) {
                   "fields": [
                     {
                       "title": "申請者",
-                      "value": user,
+                      "value": "<@" + zangyo.applicant + ">",
                       "short": false
                     },
                     {
