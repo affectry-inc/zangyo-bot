@@ -127,8 +127,8 @@ askApprover = function(response, convo) {
     } else {
       var zangyo = {}
       zangyo.id = uuid();
-      zangyo.applicant = "<@" + response.user + ">";
-      zangyo.approver = response.text;
+      zangyo.applicant = response.user;
+      zangyo.approver = response.text.slice(2, -1);
       askEndTime(response, convo, zangyo);
       convo.next();
     }
@@ -161,12 +161,12 @@ askReason = function(response, convo, zangyo) {
           "fields": [
             {
               "title": "申請者",
-              "value": zangyo.applicant,
+              "value": "<@" + zangyo.applicant + ">",
               "short": false
             },
             {
               "title": "承認者",
-              "value": zangyo.approver,
+              "value": "<@" + zangyo.approver + ">",
               "short": false
             },
             {
@@ -240,12 +240,12 @@ controller.on('interactive_message_callback', function(bot, message) {
                   "fields": [
                     {
                       "title": "申請者",
-                      "value": zangyo.applicant,
+                      "value": "<@" + zangyo.applicant + ">",
                       "short": false
                     },
                     {
                       "title": "承認者",
-                      "value": zangyo.approver,
+                      "value": "<@" + zangyo.approver + ">",
                       "short": false
                     },
                     {
@@ -264,6 +264,59 @@ controller.on('interactive_message_callback', function(bot, message) {
             }
             bot.replyInteractive(message, summary);
             bot.reply(message, "この内容で残業申請したよ。");
+            bot.startPrivateConversation({user: zangyo.approver}, function(err,convo) {
+              if (err) {
+                console.log(err);
+              } else {
+                var application = {
+                  "text": "残業申請があります。承認しますか？",
+                  "attachments": [
+                    {
+                      "text": "申請内容まとめ",
+                      "fallback": "申請内容のまとめ",
+                      "callback_id": "approve-" + zangyo.applicant + '-' + zangyo.id,
+                      "color": "#36a64f",
+                      "fields": [
+                        {
+                          "title": "申請者",
+                          "value": "<@" + zangyo.applicant + ">",
+                          "short": false
+                        },
+                        {
+                          "title": "承認者",
+                          "value": "<@" + zangyo.approver + ">",
+                          "short": false
+                        },
+                        {
+                          "title": "終了時間",
+                          "value": zangyo.endTime,
+                          "short": false
+                        },
+                        {
+                          "title": "残業する理由",
+                          "value": zangyo.reason,
+                          "short": false
+                        }
+                      ],
+                      "actions": [
+                        {
+                          "type": "button",
+                          "name": "approve",
+                          "text": "承認"
+                        },
+                        {
+                          "type": "button",
+                          "name": "reject",
+                          "text": "却下"
+                        }
+                      ]
+                    }
+                  ]
+                }
+                convo.say(application);
+                convo.next();
+              }
+            });
           } else if (ans == 'redo') {
             user.zangyos.splice(x, 1);
             bot.replyInteractive(message, "最初からやり直し！");
