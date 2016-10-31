@@ -272,6 +272,7 @@ controller.on('interactive_message_callback', function(bot, message) {
             user.zangyos.splice(x, 1);
             bot.replyInteractive(message, "キャンセルしたよ。さっさと帰ろう！");
           }
+          controller.storage.users.save(user);
           break;
         }
       }
