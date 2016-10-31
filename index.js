@@ -127,7 +127,6 @@ askApprover = function(response, convo) {
     } else {
       var zangyo = {}
       zangyo.id = uuid();
-      zangyo.applied = false;
       zangyo.approver = response.text;
       askEndTime(response, convo, zangyo);
       convo.next();
@@ -159,6 +158,11 @@ askReason = function(response, convo, zangyo) {
           "callback_id": "apply-" + response.user + '-' + zangyo.id,
           "color": "#36a64f",
           "fields": [
+            {
+              "title": "申請者",
+              "value": response.user,
+              "short": false
+            },
             {
               "title": "承認者",
               "value": zangyo.approver,
@@ -221,19 +225,23 @@ controller.on('interactive_message_callback', function(bot, message) {
 
   if (action == 'apply') {
     var ans = message.actions[0].name;
-    if (ans == 'apply') {
-      controller.storage.users.get(user_id, function(err, user) {
-        var summary = {};
-        for (var x = 0; x < user.zangyos.length; x++) {
-          if (user.zangyos[x].id == item_id) {
+    controller.storage.users.get(user_id, function(err, user) {
+      for (var x = 0; x < user.zangyos.length; x++) {
+        if (user.zangyos[x].id == item_id) {
+          if (ans == 'apply') {
             var zangyo = user.zangyos[x];
-            summary = {
+            var summary = {
               "attachments": [
                 {
                   "text": "申請内容まとめ",
                   "fallback": "申請内容のまとめ",
                   "color": "#36a64f",
                   "fields": [
+                    {
+                      "title": "申請者",
+                      "value": user,
+                      "short": false
+                    },
                     {
                       "title": "承認者",
                       "value": zangyo.approver,
@@ -253,18 +261,20 @@ controller.on('interactive_message_callback', function(bot, message) {
                 }
               ]
             }
-            break;
+            bot.replyInteractive(message, summary);
+            bot.reply(message, "この内容で残業申請したよ。");
+          } else if (ans == 'redo') {
+            user.zangyos.splice(x, 1);
+            bot.replyInteractive(message, "最初からやり直し！");
+            bot.startConversation(message, askApprover);
+          } else {
+            user.zangyos.splice(x, 1);
+            bot.replyInteractive(message, "キャンセルしたよ。さっさと帰ろう！");
           }
+          break;
         }
-        bot.replyInteractive(message, summary);
-        bot.reply(message, "この内容で残業申請したよ。");
-      });
-    } else if (ans == 'redo') {
-      bot.replyInteractive(message, "最初からやり直し！");
-      bot.startConversation(message, askApprover);
-    } else {
-      bot.replyInteractive(message, "キャンセルしたよ。さっさと帰ろう！");
-    }
+      }
+    });
   } else if (message.callback_id == "test_button") {
     var users_answer = message.actions[0].name;
     bot.replyInteractive(message, "あなたは「" + users_answer + "」を押しました");
