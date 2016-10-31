@@ -15,6 +15,7 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
 var Botkit = require('botkit');
+var MongoUrl = process.env.MONGODB_URI || 'mongodb://localhost:27017/zangyo-bot';
 
 if (!process.env.clientId || !process.env.clientSecret || !process.env.port) {
   console.log('Error: Specify clientId clientSecret and port in environment');
@@ -23,7 +24,7 @@ if (!process.env.clientId || !process.env.clientSecret || !process.env.port) {
 
 var controller = Botkit.slackbot({
   // interactive_replies: true, // tells botkit to send button clicks into conversations
-  json_file_store: './db/db_slackbutton_bot/',
+  storage: require('botkit-storage-mongo')({mongoUri: MongoUrl})
 }).configureSlackApp(
   {
     clientId: process.env.clientId,
@@ -113,10 +114,127 @@ controller.hears('button', ['direct_message'],function(bot,message) {
   bot.reply(message, reply);
 });
 
+controller.hears('^.*残業.*申請.*',['direct_message'],function(bot,message) {
+  bot.startConversation(message, askApprover);
+});
+
+askApprover = function(response, convo) {
+  convo.ask("プロマネは誰？ [@xxx]", function(response, convo) {
+    console.log(response.text);
+    convo.say(response.text);
+    if (!response.text.match(/^<@[a-zA-Z0-9]*>$/)) {
+      convo.say('@xxx の形式でユーザーを指定してね。');
+      askApprover(response, convo);
+      convo.next();
+    } else {
+      var ans = {}
+      ans.id = uuid();
+      ans.approver = response.text
+      askEndTime(response, convo, ans);
+      convo.next();
+    }
+  });
+}
+askEndTime = function(response, convo, ans) {
+  convo.ask("何時に終わる？ [HH:MM]", function(response, convo) {
+    if (!response.text.match(/^([0-2]?[0-9]):([0-5]?[0-9])$/)) {
+      convo.say('HH:MM の形式で回答してね。');
+      askEndTime(response, convo, ans);
+      convo.next();
+    } else {
+      ans.endTime = response.text
+      askReason(response, convo, ans);
+      convo.next();
+    }
+  });
+}
+askReason = function(response, convo, ans) {
+  convo.ask("残業する理由は？", function(response, convo) {
+    ans.reason = response.text
+    var summary = {
+      "text": "この内容で残業申請しますか？",
+      "attachments": [
+        {
+          "text": "申請内容まとめ",
+          "fallback": "申請内容のまとめ",
+          "callback_id": "apply-" + ans.id,
+          "color": "#36a64f",
+          "fields": [
+            {
+              "title": "承認者",
+              "value": ans.approver,
+              "short": false
+            },
+            {
+              "title": "終了時間",
+              "value": ans.endTime,
+              "short": false
+            },
+            {
+              "title": "残業する理由",
+              "value": ans.reason,
+              "short": false
+            }
+          ],
+          "actions": [
+            {
+              "type": "button",
+              "name": "apply",
+              "text": "申請"
+            },
+            {
+              "type": "button",
+              "name": "redo",
+              "text": "やり直し"
+            }
+          ]
+        }
+      ]
+    };
+    convo.say(summary);
+    convo.next();
+  });
+}
 
 controller.on('interactive_message_callback', function(bot, message) {
-  var users_answer = message.actions[0].name;
-  if (message.callback_id == "test_button") {
+  var ids = message.callback_id.split(/\-/);
+  var action = ids[0];
+  var item_id = ids[1];
+
+  if (action == 'apply') {
+    var applicant_answer = message.actions[0].name;
+    bot.replyInteractive(message, message.actions[0].text + "しました。");
+  } else if (message.callback_id == "test_button") {
+    var users_answer = message.actions[0].name;
     bot.replyInteractive(message, "あなたは「" + users_answer + "」を押しました");
   }
 });
+
+controller.storage.teams.all(function(err,teams) {
+
+  if (err) {
+    throw new Error(err);
+  }
+
+  // connect all teams with bots up to slack!
+  for (var t  in teams) {
+    if (teams[t].bot) {
+      controller.spawn(teams[t]).startRTM(function(err, bot) {
+        if (err) {
+          console.log('Error connecting bot to Slack:',err);
+        } else {
+          trackBot(bot);
+        }
+      });
+    }
+  }
+});
+
+function uuid() {
+  var uuid = "", i, random;
+  for (i = 0; i < 32; i++) {
+    random = Math.random() * 16 | 0;
+    uuid += (i == 12 ? 4 : (i == 16 ? (random & 3 | 8) : random)).toString(16);
+  }
+  return uuid;
+};
