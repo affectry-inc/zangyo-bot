@@ -21,5 +21,8 @@
   "bugs": {
     "url": "https://github.com/affectry-inc/zangyo-bot/issues"
   },
-  "homepage": "https://github.com/affectry-inc/zangyo-bot#readme"
+  "homepage": "https://github.com/affectry-inc/zangyo-bot#readme",
+  "dependencies": {
+    "botkit": "^0.4.0"
+  }
 }
