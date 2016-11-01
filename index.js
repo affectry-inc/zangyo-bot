@@ -16,6 +16,7 @@
 
 var Botkit = require('botkit');
 var MongoUrl = process.env.MONGODB_URI || 'mongodb://localhost:27017/zangyo-bot';
+var moment = require('moment');
 
 if (!process.env.clientId || !process.env.clientSecret || !process.env.port) {
   console.log('Error: Specify clientId clientSecret and port in environment');
@@ -127,7 +128,7 @@ askApprover = function(response, convo) {
     } else {
       var zangyo = {}
       zangyo.id = uuid();
-      zangyo.date = new Date().toLocaleDateString().replace(/-/g, "/");
+      zangyo.date = moment().format("YYYY/MM/DD");
       zangyo.applicant = response.user;
       zangyo.approver = response.text.slice(2, -1);
       askEndTime(response, convo, zangyo);
