@@ -127,6 +127,7 @@ askApprover = function(response, convo) {
     } else {
       var zangyo = {}
       zangyo.id = uuid();
+      zangyo.date = new Date().toLocaleDateString().replace(/-/g, "/");
       zangyo.applicant = response.user;
       zangyo.approver = response.text.slice(2, -1);
       askEndTime(response, convo, zangyo);
@@ -154,7 +155,7 @@ askReason = function(response, convo, zangyo) {
       "text": "この内容で残業申請しますか？",
       "attachments": [
         {
-          "text": "申請内容まとめ",
+          "text": "申請内容まとめ(" + zangyo.date + ")",
           "fallback": "申請内容のまとめ",
           "callback_id": "apply-" + response.user + '-' + zangyo.id,
           "color": "#36a64f",
@@ -234,7 +235,7 @@ controller.on('interactive_message_callback', function(bot, message) {
             var summary = {
               "attachments": [
                 {
-                  "text": "申請内容まとめ",
+                  "text": "申請内容まとめ(" + zangyo.date + ")",
                   "fallback": "申請内容のまとめ",
                   "color": "#36a64f",
                   "fields": [
@@ -272,7 +273,7 @@ controller.on('interactive_message_callback', function(bot, message) {
                   "text": "残業申請があります。承認しますか？",
                   "attachments": [
                     {
-                      "text": "申請内容まとめ",
+                      "text": "申請内容まとめ(" + zangyo.date + ")",
                       "fallback": "申請内容のまとめ",
                       "callback_id": "approve-" + zangyo.applicant + '-' + zangyo.id,
                       "color": "#36a64f",
@@ -339,7 +340,7 @@ controller.on('interactive_message_callback', function(bot, message) {
           var summary = {
             "attachments": [
               {
-                "text": "申請内容まとめ",
+                "text": "申請内容まとめ(" + zangyo.date + ")",
                 "fallback": "申請内容のまとめ",
                 "color": "#36a64f",
                 "fields": [
