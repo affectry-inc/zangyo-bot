@@ -71,10 +71,8 @@ controller.on('create_bot',function(bot,config) {
           convo.say('You must now /invite me to a channel so that I can be of use!');
         }
       });
-
     });
   }
-
 });
 
 // Handle events related to the websocket connection to Slack
@@ -96,10 +94,9 @@ controller.on('interactive_message_callback', function(bot, message) {
   var action = ids[0];
   var user_id = ids[1];
   var item_id = ids[2];
+  var ans = message.actions[0].name;
 
   if (action == 'apply') {
-    var ans = message.actions[0].name;
-
     if (ans == 'apply') {
       ZangyoBot.apply(user_id, item_id, bot, message);
     } else if (ans == 'redo') {
@@ -108,82 +105,11 @@ controller.on('interactive_message_callback', function(bot, message) {
       ZangyoBot.cancelApply(user_id, item_id, bot, message);
     }
   } else if (action == 'approve') {
-    var ans = message.actions[0].name;
-
     if (ans == 'approve') {
       ZangyoBot.approve(user_id, item_id, bot, message);
     } else if (ans == 'reject') {
       ZangyoBot.rejectApprove(user_id, item_id, bot, message);
     }
-
-    // controller.storage.users.get(user_id, function(err, user) {
-    //   for (var x = 0; x < user.zangyos.length; x++) {
-    //     if (user.zangyos[x].id == item_id) {
-    //       var zangyo = user.zangyos[x];
-    //       var summary = {
-    //         "attachments": [
-    //           {
-    //             "text": "申請内容まとめ(" + zangyo.date + ")",
-    //             "fallback": "申請内容のまとめ",
-    //             "color": "#36a64f",
-    //             "fields": [
-    //               {
-    //                 "title": "申請者",
-    //                 "value": "<@" + zangyo.applicant + ">",
-    //                 "short": false
-    //               },
-    //               {
-    //                 "title": "承認者",
-    //                 "value": "<@" + zangyo.approver + ">",
-    //                 "short": false
-    //               },
-    //               {
-    //                 "title": "終了時間",
-    //                 "value": zangyo.endTime,
-    //                 "short": false
-    //               },
-    //               {
-    //                 "title": "残業する理由",
-    //                 "value": zangyo.reason,
-    //                 "short": false
-    //               }
-    //             ]
-    //           }
-    //         ]
-    //       }
-    //       bot.replyInteractive(message, summary);
-    //       if (ans == 'approve') {
-    //         user.zangyos[x].approved = true;
-    //         bot.reply(message, "この申請を承認したよ。");
-
-    //         controller.storage.users.get(zangyo.applicant, function(err, user) {
-    //           controller.storage.teams.get(user.team_id, function(err, team) {
-    //             summary.text = "この申請が承認されました。";
-    //             bot.configureIncomingWebhook(team.incoming_webhook);
-    //             bot.sendWebhook(summary, function(err,res) {
-    //               if (err) console.log(err);
-    //             });
-    //           });
-    //         });
-    //       } else if (ans == 'reject') {
-    //         user.zangyos[x].approved = false;
-    //         bot.reply(message, "この申請を却下したよ。");
-
-    //         controller.storage.users.get(zangyo.applicant, function(err, user) {
-    //           controller.storage.teams.get(user.team_id, function(err, team) {
-    //             summary.text = "この申請が却下されました。";
-    //             bot.configureIncomingWebhook(team.incoming_webhook);
-    //             bot.sendWebhook(summary, function(err,res) {
-    //               if (err) console.log(err);
-    //             });
-    //           });
-    //         });
-    //       }
-    //       controller.storage.users.save(user);
-    //       break;
-    //     }
-    //   }
-    // });
   }
 });
 
