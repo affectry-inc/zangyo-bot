@@ -114,7 +114,7 @@ controller.hears('button', ['direct_message'],function(bot,message) {
   bot.reply(message, reply);
 });
 
-controller.hears('^.*残業.*申請.*',['direct_message'],function(bot,message) {
+controller.hears('^.*残業.*申請.*',['direct_message','direct_mention'],function(bot,message) {
   bot.startConversation(message, askApprover);
 });
 
