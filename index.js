@@ -383,16 +383,6 @@ controller.on('interactive_message_callback', function(bot, message) {
                 });
               });
             });
-
-            // bot.startPrivateConversation({user: zangyo.applicant}, function(err,convo) {
-            //   if (err) {
-            //     console.log(err);
-            //   } else {
-            //     convo.say(summary);
-            //     convo.say("この申請が承認されました。");
-            //     convo.next();
-            //   }
-            // });
           } else if (ans == 'reject') {
             user.zangyos[x].approved = false;
             bot.reply(message, "この申請を却下したよ。");
@@ -406,16 +396,6 @@ controller.on('interactive_message_callback', function(bot, message) {
                 });
               });
             });
-
-            // bot.startPrivateConversation({user: zangyo.applicant}, function(err,convo) {
-            //   if (err) {
-            //     console.log(err);
-            //   } else {
-            //     convo.say(summary);
-            //     convo.say("この申請が却下されました。");
-            //     convo.next();
-            //   }
-            // });
           }
           controller.storage.users.save(user);
           break;
