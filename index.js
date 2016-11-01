@@ -30,7 +30,7 @@ var controller = Botkit.slackbot({
   {
     clientId: process.env.clientId,
     clientSecret: process.env.clientSecret,
-    scopes: ['bot'],
+    scopes: ['bot','incoming-webhook'],
   }
 );
 
@@ -373,27 +373,53 @@ controller.on('interactive_message_callback', function(bot, message) {
           if (ans == 'approve') {
             user.zangyos[x].approved = true;
             bot.reply(message, "この申請を承認したよ。");
-            bot.startPrivateConversation({user: zangyo.applicant}, function(err,convo) {
-              if (err) {
-                console.log(err);
-              } else {
-                convo.say(summary);
-                convo.say("この申請が承認されました。");
-                convo.next();
-              }
+
+            controller.storage.users.get(zangyo.applicant, function(err, user) {
+              controller.storage.teams.get(user.team_id, function(err, team) {
+                summary.text = "この申請が承認されました。";
+                bot.configureIncomingWebhook(team.incoming_webhook);
+                bot.sendWebhook({
+                  text: summary
+                },function(err,res) {
+                  if (err) console.log(err);
+                });
+              });
             });
+
+            // bot.startPrivateConversation({user: zangyo.applicant}, function(err,convo) {
+            //   if (err) {
+            //     console.log(err);
+            //   } else {
+            //     convo.say(summary);
+            //     convo.say("この申請が承認されました。");
+            //     convo.next();
+            //   }
+            // });
           } else if (ans == 'reject') {
             user.zangyos[x].approved = false;
             bot.reply(message, "この申請を却下したよ。");
-            bot.startPrivateConversation({user: zangyo.applicant}, function(err,convo) {
-              if (err) {
-                console.log(err);
-              } else {
-                convo.say(summary);
-                convo.say("この申請が却下されました。");
-                convo.next();
-              }
+
+            controller.storage.users.get(zangyo.applicant, function(err, user) {
+              controller.storage.teams.get(user.team_id, function(err, team) {
+                summary.text = "この申請が却下されました。";
+                bot.configureIncomingWebhook(team.incoming_webhook);
+                bot.sendWebhook({
+                  text: summary
+                },function(err,res) {
+                  if (err) console.log(err);
+                });
+              });
             });
+
+            // bot.startPrivateConversation({user: zangyo.applicant}, function(err,convo) {
+            //   if (err) {
+            //     console.log(err);
+            //   } else {
+            //     convo.say(summary);
+            //     convo.say("この申請が却下されました。");
+            //     convo.next();
+            //   }
+            // });
           }
           controller.storage.users.save(user);
           break;
