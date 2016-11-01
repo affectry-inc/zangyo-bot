@@ -378,9 +378,7 @@ controller.on('interactive_message_callback', function(bot, message) {
               controller.storage.teams.get(user.team_id, function(err, team) {
                 summary.text = "この申請が承認されました。";
                 bot.configureIncomingWebhook(team.incoming_webhook);
-                bot.sendWebhook({
-                  text: summary
-                },function(err,res) {
+                bot.sendWebhook(summary, function(err,res) {
                   if (err) console.log(err);
                 });
               });
@@ -403,9 +401,7 @@ controller.on('interactive_message_callback', function(bot, message) {
               controller.storage.teams.get(user.team_id, function(err, team) {
                 summary.text = "この申請が却下されました。";
                 bot.configureIncomingWebhook(team.incoming_webhook);
-                bot.sendWebhook({
-                  text: summary
-                },function(err,res) {
+                bot.sendWebhook(summary, function(err,res) {
                   if (err) console.log(err);
                 });
               });
