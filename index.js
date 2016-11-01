@@ -89,6 +89,39 @@ controller.hears('^.*残業.*申請.*',['direct_message','direct_mention'],funct
   bot.startConversation(message, ZangyoBot.createApplication);
 });
 
+controller.hears('test', ['direct_message'],function(bot,message) {
+  var reply = {
+    "text": "ボタンのテストです。",
+    "attachments": [{
+      "text": "どれか押してください。",
+      "fallback": "失敗しました。",
+      "callback_id": "test_button",
+      "color": "#808080",
+      "mrkdwn_in": ["fields"],
+      "fields": [
+        {
+          "title": "<@" + message.user + "> まで、以下の理由により",
+          "value": "*<@" + message.user+ "> ヴァリュー* ですよー",
+          "short": false
+        }
+      ],
+      "actions": [
+        {
+          "type": "button",
+          "name": "test_button1",
+          "text": "テストボタン1"
+        },
+        {
+          "type": "button",
+          "name": "test_button2",
+          "text": "テストボタン2"
+        }
+      ]
+    }]
+  };
+  bot.reply(message, reply);
+});
+
 controller.on('interactive_message_callback', function(bot, message) {
   var ids = message.callback_id.split(/\-/);
   var action = ids[0];
