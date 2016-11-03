@@ -25,6 +25,6 @@
   "dependencies": {
     "botkit": "^0.4.0",
     "botkit-storage-mongo": "^1.0.4",
-    "moment": "^2.15.2"
+    "moment-timezone": "^0.5.7"
   }
 }
