@@ -125,23 +125,22 @@ controller.hears('test', ['direct_message'],function(bot,message) {
 controller.on('interactive_message_callback', function(bot, message) {
   var ids = message.callback_id.split(/\-/);
   var action = ids[0];
-  var user_id = ids[1];
-  var item_id = ids[2];
+  var item_id = ids[1];
   var ans = message.actions[0].name;
 
   if (action == 'apply') {
     if (ans == 'apply') {
-      ZangyoBot.apply(user_id, item_id, bot, message);
+      ZangyoBot.apply(item_id, bot, message);
     } else if (ans == 'redo') {
-      ZangyoBot.redoApply(user_id, item_id, bot, message);
+      ZangyoBot.redoApply(item_id, bot, message);
     } else if (ans == 'cancel') {
-      ZangyoBot.cancelApply(user_id, item_id, bot, message);
+      ZangyoBot.cancelApply(item_id, bot, message);
     }
   } else if (action == 'approve') {
     if (ans == 'approve') {
-      ZangyoBot.approve(user_id, item_id, bot, message);
+      ZangyoBot.approve(item_id, bot, message);
     } else if (ans == 'reject') {
-      ZangyoBot.rejectApprove(user_id, item_id, bot, message);
+      ZangyoBot.rejectApprove(item_id, bot, message);
     }
   }
 });
