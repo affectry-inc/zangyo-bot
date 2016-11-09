@@ -85,6 +85,28 @@ controller.on('rtm_close',function(bot) {
   // you may want to attempt to re-open
 });
 
+controller.hears('^.*残業.*一覧.*',['direct_message','direct_mention'],function(bot,message) {
+  var range, is_detailed;
+
+  if (message.text.match(/(今日|本日|今夜|今晩)/)) {
+    range = ZangyoBot.ranges.today;
+  } else if (message.text.match(/(昨日|昨日|昨夜|昨晩)/)) {
+    range = ZangyoBot.ranges.yesterday;
+  } else if (message.text.match(/今週/)) {
+    range = ZangyoBot.ranges.this_week;
+  } else if (message.text.match(/先週/)) {
+    range = ZangyoBot.ranges.last_week;
+  } else if (message.text.match(/過去一週間/)) {
+    range = ZangyoBot.ranges.past_one_week;
+  } else {
+    range = ZangyoBot.ranges.today;
+  }
+
+  is_detailed = message.text.match(/(詳細|詳しく)/) != null;
+
+  ZangyoBot.replyList(bot, message, range, is_detailed);
+});
+
 controller.hears('^.*残業.*申請.*',['direct_message','direct_mention'],function(bot,message) {
   bot.startConversation(message, ZangyoBot.createApplication);
 });
@@ -94,6 +116,7 @@ controller.hears('test', ['direct_message'],function(bot,message) {
     "text": "ボタンのテストです。",
     "attachments": [{
       "text": "どれか押してください。",
+      "author_name": "<@" + message.user + ">",
       "fallback": "失敗しました。",
       "callback_id": "test_button",
       "color": "#808080",
