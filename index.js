@@ -90,7 +90,9 @@ controller.hears('^.*(残業|申請).*一覧.*',['direct_message','direct_mentio
 
   if (message.text.match(/(今日|本日|今夜|今晩)/)) {
     range = ZangyoBot.ranges.today;
-  } else if (message.text.match(/(昨日|昨日|昨夜|昨晩)/)) {
+  } else if (message.text.match(/一昨日/)) {
+    range = ZangyoBot.ranges.day_before_yesterday;
+  } else if (message.text.match(/(昨日|昨夜|昨晩)/)) {
     range = ZangyoBot.ranges.yesterday;
   } else if (message.text.match(/今週/)) {
     range = ZangyoBot.ranges.this_week;
@@ -98,6 +100,10 @@ controller.hears('^.*(残業|申請).*一覧.*',['direct_message','direct_mentio
     range = ZangyoBot.ranges.last_week;
   } else if (message.text.match(/過去一週間/)) {
     range = ZangyoBot.ranges.past_one_week;
+  } else if (message.text.match(/(1[0-2]|0?[1-9])\/(3[01]|[12][0-9]|0?[1-9])/g)) {
+    range = message.text.match(/(1[0-2]|0?[1-9])\/(3[01]|[12][0-9]|0?[1-9])/g)[0];
+  } else if (message.text.match(/(1[0-2]|0?[1-9])月(3[01]|[12][0-9]|0?[1-9])日/g)) {
+    range = message.text.match(/(1[0-2]|0?[1-9])月(3[01]|[12][0-9]|0?[1-9])日/g)[0];
   } else {
     range = ZangyoBot.ranges.today;
   }
