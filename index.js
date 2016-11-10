@@ -85,7 +85,7 @@ controller.on('rtm_close',function(bot) {
   // you may want to attempt to re-open
 });
 
-controller.hears('^.*残業.*一覧.*',['direct_message','direct_mention'],function(bot,message) {
+controller.hears('^.*(残業|申請).*一覧.*',['direct_message','direct_mention'],function(bot,message) {
   var range, is_detailed;
 
   if (message.text.match(/(今日|本日|今夜|今晩)/)) {
