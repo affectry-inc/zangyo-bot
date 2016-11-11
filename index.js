@@ -86,7 +86,7 @@ controller.on('rtm_close',function(bot) {
 });
 
 controller.hears('^.*(残業|申請).*一覧.*',['direct_message','direct_mention'],function(bot,message) {
-  var range, applicant, is_detailed;
+  var range, applicant, filter, is_detailed;
 
   if (message.text.match(/(今日|本日|今夜|今晩)/)) {
     range = ZangyoBot.ranges.today;
@@ -100,6 +100,12 @@ controller.hears('^.*(残業|申請).*一覧.*',['direct_message','direct_mentio
     range = ZangyoBot.ranges.last_week;
   } else if (message.text.match(/(過去一週間|ここ一週間)/)) {
     range = ZangyoBot.ranges.past_one_week;
+  } else if (message.text.match(/今月/)) {
+    range = ZangyoBot.ranges.this_month;
+  } else if (message.text.match(/先月/)) {
+    range = ZangyoBot.ranges.last_month;
+  } else if (message.text.match(/(先々月|先先月)/)) {
+    range = ZangyoBot.ranges.month_before_last;
   } else if (message.text.match(/(1[0-2]|0?[1-9])\/(3[01]|[12][0-9]|0?[1-9])/g)) {
     range = message.text.match(/(1[0-2]|0?[1-9])\/(3[01]|[12][0-9]|0?[1-9])/g)[0];
   } else if (message.text.match(/(1[0-2]|0?[1-9])月(3[01]|[12][0-9]|0?[1-9])日/g)) {
@@ -112,9 +118,17 @@ controller.hears('^.*(残業|申請).*一覧.*',['direct_message','direct_mentio
     applicant = message.text.match(/\<\@[a-zA-Z0-9]+\>/g)[0].slice(2, -1);
   }
 
+  if (message.text.match(/(全て|全部|申請一覧)/)) {
+    filter = ZangyoBot.filters.all;
+  } else if (message.text.match(/(最後|最終)/)) {
+    filter = ZangyoBot.filters.last;
+  } else {
+    filter = ZangyoBot.filters.approved;
+  }
+
   is_detailed = message.text.match(/(詳細|詳しく)/) != null;
 
-  ZangyoBot.replyList(bot, message, range, applicant, is_detailed);
+  ZangyoBot.replyList(bot, message, range, applicant, filter, is_detailed);
 });
 
 controller.hears('^.*残業.*申請.*',['direct_message','direct_mention'],function(bot,message) {
