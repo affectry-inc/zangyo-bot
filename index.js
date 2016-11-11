@@ -110,6 +110,9 @@ controller.hears('^.*(残業|申請).*一覧.*',['direct_message','direct_mentio
     range = message.text.match(/(1[0-2]|0?[1-9])\/(3[01]|[12][0-9]|0?[1-9])/g)[0];
   } else if (message.text.match(/(1[0-2]|0?[1-9])月(3[01]|[12][0-9]|0?[1-9])日/g)) {
     range = message.text.match(/(1[0-2]|0?[1-9])月(3[01]|[12][0-9]|0?[1-9])日/g)[0];
+  } else if (message.text.match(/(明日|明後日|明々後日|来週|再来週|来月|再来月|来年|再来年)/)) {
+    bot.reply(message, "未来のことなどわかるかい！");
+    return;
   } else {
     range = ZangyoBot.ranges.today;
   }
