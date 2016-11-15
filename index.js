@@ -135,8 +135,7 @@ controller.hears('^.*(残業|申請).*一覧.*',['direct_message','direct_mentio
 
   is_detailed = message.text.match(/(詳細|詳しく)/) != null;
 
-  var reply = ZangyoBot.buildMessage(bot, message, range, applicant, filter, is_detailed);
-  bot.reply(message, reply);
+  ZangyoBot.replyList(bot, message, range, applicant, filter, is_detailed);
 });
 
 controller.hears('^.*残業.*申請.*',['direct_message','direct_mention'],function(bot,message) {
@@ -243,8 +242,7 @@ controller.on('slash_command', function(bot, message) {
 
       message.team = message.team_id;
 
-      var reply = ZangyoBot.buildMessage(bot, message, range, applicant, filter, is_detailed);
-      bot.replyPrivate(message, reply);
+      ZangyoBot.replyList(bot, message, range, applicant, filter, is_detailed);
       break;
     case 'apply':
       var approver, end_time, reason;
