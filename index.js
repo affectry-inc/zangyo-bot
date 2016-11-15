@@ -85,6 +85,10 @@ controller.on('rtm_close',function(bot) {
   // you may want to attempt to re-open
 });
 
+controller.hears('^.*(申請中|未承認).*一覧.*',['direct_message','direct_mention'],function(bot,message) {
+  ZangyoBot.replyPendingList(bot, message);
+});
+
 controller.hears('^.*(残業|申請).*一覧.*',['direct_message','direct_mention'],function(bot,message) {
   var range, applicant, filter, is_detailed;
 
