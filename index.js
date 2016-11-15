@@ -106,10 +106,10 @@ controller.hears('^.*(残業|申請).*一覧.*',['direct_message','direct_mentio
     range = ZangyoBot.ranges.past_one_week;
   } else if (message.text.match(/今月/)) {
     range = ZangyoBot.ranges.this_month;
-  } else if (message.text.match(/先月/)) {
-    range = ZangyoBot.ranges.last_month;
   } else if (message.text.match(/(先々月|先先月)/)) {
     range = ZangyoBot.ranges.month_before_last;
+  } else if (message.text.match(/先月/)) {
+    range = ZangyoBot.ranges.last_month;
   } else if (message.text.match(/(1[0-2]|0?[1-9])\/(3[01]|[12][0-9]|0?[1-9])/g)) {
     range = message.text.match(/(1[0-2]|0?[1-9])\/(3[01]|[12][0-9]|0?[1-9])/g)[0];
   } else if (message.text.match(/(1[0-2]|0?[1-9])月(3[01]|[12][0-9]|0?[1-9])日/g)) {
@@ -139,7 +139,7 @@ controller.hears('^.*(残業|申請).*一覧.*',['direct_message','direct_mentio
 });
 
 controller.hears('^.*残業.*申請.*',['direct_message','direct_mention'],function(bot,message) {
-  bot.startConversation(message, ZangyoBot.createApplication);
+  bot.startConversation(message, ZangyoBot.applicationWizard);
 });
 
 controller.hears('test', ['direct_message'],function(bot,message) {
@@ -202,17 +202,80 @@ controller.on('interactive_message_callback', function(bot, message) {
 });
 
 controller.on('slash_command', function(bot, message) {
+  var help_message = "Use `/zangyo` to apply and browse zangyos for your team.\n Available commands are:\n • `/zangyo apply @approver HH:MM \'reason\'` \n • `/zangyo list [today/yesterday/this week] [@xxxxx] [detail]`"
+
   switch (message.text.split(' ')[0]) {
     case 'list':
+      var range, applicant, is_detailed;
+
+      if (message.text.match(/today/)) {
+        range = ZangyoBot.ranges.today;
+      } else if (message.text.match(/day before yesterday/)) {
+        range = ZangyoBot.ranges.day_before_yesterday;
+      } else if (message.text.match(/yesterday/)) {
+        range = ZangyoBot.ranges.yesterday;
+      } else if (message.text.match(/this week/)) {
+        range = ZangyoBot.ranges.this_week;
+      } else if (message.text.match(/last week/)) {
+        range = ZangyoBot.ranges.last_week;
+      } else if (message.text.match(/past one week/)) {
+        range = ZangyoBot.ranges.past_one_week;
+      } else if (message.text.match(/this month/)) {
+        range = ZangyoBot.ranges.this_month;
+      } else if (message.text.match(/month before last/)) {
+        range = ZangyoBot.ranges.month_before_last;
+      } else if (message.text.match(/last month/)) {
+        range = ZangyoBot.ranges.last_month;
+      } else if (message.text.match(/(1[0-2]|0?[1-9])\/(3[01]|[12][0-9]|0?[1-9])/g)) {
+        range = message.text.match(/(1[0-2]|0?[1-9])\/(3[01]|[12][0-9]|0?[1-9])/g)[0];
+      } else {
+        range = ZangyoBot.ranges.today;
+      }
+
+      if (message.text.match(/\<\@[a-zA-Z0-9]+\>/g)) {
+        applicant = message.text.match(/\<\@[a-zA-Z0-9]+\>/g)[0].slice(2, -1);
+      }
+
+      is_detailed = message.text.match(/(detail|details)/) != null;
+
+      ZangyoBot.replyList(bot, message, range, applicant, null, is_detailed);
       break;
     case 'apply':
+      var approver, end_time, reason;
+
+      if (message.text.match(/\<\@[a-zA-Z0-9]+\>/g)) {
+        approver = message.text.match(/\<\@[a-zA-Z0-9]+\>/g)[0].slice(2, -1);
+      } else {
+        bot.replyPrivate(message, '`Approver` is missing!!');
+        return;
+      }
+
+      if (message.text.match(/([0-2]?[0-9]):([0-5]?[0-9])/g)) {
+        end_time = message.text.match(/([0-2]?[0-9]):([0-5]?[0-9])/g)[0];
+      } else {
+        bot.replyPrivate(message, '`End time` is missing!!');
+        return;
+      }
+
+      if (message.text.match(/\'.+\'/g)) {
+        end_time = message.text.match(/\'.+\'/g)[0];
+      } else if (message.text.match(/\".+\"/g)) {
+        end_time = message.text.match(/\".+\"/g)[0];
+      } else if (message.text.match(/\「.+\」/g)) {
+        end_time = message.text.match(/\「.+\」/g)[0];
+      } else {
+        bot.replyPrivate(message, '`Reason` is missing!!');
+        return;
+      }
+
+      ZangyoBot.createApplication(bot, message, approver, end_time, reason);
       break;
     case 'help':
-      var help = "Use `/zangyo` to apply and browse zangyos for your team.\n Available commands are:\n * `/zangyo list [detail/details] [today/this week/last week/past one week] [@xxxxx]`\n * `/zangyo apply @approver HH:MM \'reason\'`"
-      bot.replyPrivate(message, help);
+      bot.replyPrivate(message, help_message);
       break;
     default:
-      bot.replyPrivate(message, 'Illegal command!!');
+      bot.replyPrivate(message, 'Illegal command!! :ghost:');
+      bot.replyPrivate(message, help_message);
       break;
   }
 });
