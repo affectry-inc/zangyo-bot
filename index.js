@@ -146,7 +146,7 @@ controller.hears('test', ['direct_message'],function(bot,message) {
   var reply = {
     "text": "ボタンのテストです。",
     "attachments": [{
-      "text": "どれか押してください。",
+      "text": "どれか押してください。\n 改行したかい？",
       "author_name": "<@" + message.user + ">",
       "fallback": "失敗しました。",
       "callback_id": "test_button",
@@ -198,6 +198,22 @@ controller.on('interactive_message_callback', function(bot, message) {
     } else if (ans == 'reject-comment') {
       ZangyoBot.rejectCommentApprove(item_id, bot, message);
     }
+  }
+});
+
+controller.on('slash_command', function(bot, message) {
+  switch (message.text.split(' ')[0]) {
+    case 'list':
+      break;
+    case 'apply':
+      break;
+    case 'help':
+      var help = "Use `/zangyo` to apply and browse zangyos for your team.\n Available commands are:\n * `/zangyo list [detail/details] [today/this week/last week/past one week] [@xxxxx]`\n * `/zangyo apply @approver HH:MM \'reason\'`"
+      bot.replyPrivate(message, help);
+      break;
+    default:
+      bot.replyPrivate(message, 'Illegal command!!');
+      break;
   }
 });
 
