@@ -238,6 +238,8 @@ controller.on('slash_command', function(bot, message) {
 
       is_detailed = message.text.match(/(detail|details)/) != null;
 
+      message.team = message.team_id;
+
       ZangyoBot.replyList(bot, message, range, applicant, null, is_detailed);
       break;
     case 'apply':
@@ -267,6 +269,8 @@ controller.on('slash_command', function(bot, message) {
         bot.replyPrivate(message, '`Reason` is missing!!');
         return;
       }
+
+      message.team = message.team_id;
 
       ZangyoBot.createApplication(bot, message, approver, end_time, reason);
       break;
