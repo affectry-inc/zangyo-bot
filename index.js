@@ -203,7 +203,7 @@ controller.on('interactive_message_callback', function(bot, message) {
 
 controller.on('slash_command', function(bot, message) {
   var list_help = "`/zangyo list [today/yesterday/this week] [@xxxxx] [all] [detail]`";
-  var apply_help = "`/zangyo apply @approver HH:MM \'reason\'`";
+  var apply_help = "`/zangyo apply` starts the wizard";
   var help_message = "Use `/zangyo` to apply and browse zangyos for your team.\n Available commands are:\n • " + apply_help + "\n • " + list_help;
 
   switch (message.text.split(' ')[0]) {
@@ -258,42 +258,43 @@ controller.on('slash_command', function(bot, message) {
       ZangyoBot.replyList(bot, message, range, applicant, filter, is_detailed);
       break;
     case 'apply':
-      var approver, end_time, reason;
+      // var approver, end_time, reason;
 
-      if (message.text.match(/help/g)) {
-        bot.replyPrivate(message, apply_help);
-        return;
-      }
+      // if (message.text.match(/help/g)) {
+      //   bot.replyPrivate(message, apply_help);
+      //   return;
+      // }
 
-      console.log(JSON.stringify(message));
-      if (message.text.match(/\<\@[a-zA-Z0-9]+\>/g)) {
-        approver = message.text.match(/\<\@[a-zA-Z0-9]+\>/g)[0].slice(2, -1);
-      } else {
-        bot.replyPrivate(message, '`Approver` is missing!!');
-        return;
-      }
+      // console.log(JSON.stringify(message));
+      // if (message.text.match(/\<\@[a-zA-Z0-9]+\>/g)) {
+      //   approver = message.text.match(/\<\@[a-zA-Z0-9]+\>/g)[0].slice(2, -1);
+      // } else {
+      //   bot.replyPrivate(message, '`Approver` is missing!!');
+      //   return;
+      // }
 
-      if (message.text.match(/([0-2]?[0-9]):([0-5]?[0-9])/g)) {
-        end_time = message.text.match(/([0-2]?[0-9]):([0-5]?[0-9])/g)[0];
-      } else {
-        bot.replyPrivate(message, '`End time` is missing!!');
-        return;
-      }
+      // if (message.text.match(/([0-2]?[0-9]):([0-5]?[0-9])/g)) {
+      //   end_time = message.text.match(/([0-2]?[0-9]):([0-5]?[0-9])/g)[0];
+      // } else {
+      //   bot.replyPrivate(message, '`End time` is missing!!');
+      //   return;
+      // }
 
-      if (message.text.match(/\'.+\'/g)) {
-        end_time = message.text.match(/\'.+\'/g)[0];
-      } else if (message.text.match(/\".+\"/g)) {
-        end_time = message.text.match(/\".+\"/g)[0];
-      } else if (message.text.match(/\「.+\」/g)) {
-        end_time = message.text.match(/\「.+\」/g)[0];
-      } else {
-        bot.replyPrivate(message, '`Reason` is missing!!');
-        return;
-      }
+      // if (message.text.match(/\'.+\'/g)) {
+      //   end_time = message.text.match(/\'.+\'/g)[0];
+      // } else if (message.text.match(/\".+\"/g)) {
+      //   end_time = message.text.match(/\".+\"/g)[0];
+      // } else if (message.text.match(/\「.+\」/g)) {
+      //   end_time = message.text.match(/\「.+\」/g)[0];
+      // } else {
+      //   bot.replyPrivate(message, '`Reason` is missing!!');
+      //   return;
+      // }
 
-      message.team = message.team_id;
+      // message.team = message.team_id;
 
-      ZangyoBot.createApplication(bot, message, approver, end_time, reason);
+      // ZangyoBot.createApplication(bot, message, approver, end_time, reason);
+      bot.startConversation(message, ZangyoBot.applicationWizard);
       break;
     case 'help':
       bot.replyPrivate(message, help_message);
