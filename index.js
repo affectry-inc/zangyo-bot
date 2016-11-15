@@ -206,7 +206,7 @@ controller.on('slash_command', function(bot, message) {
 
   switch (message.text.split(' ')[0]) {
     case 'list':
-      var range, applicant, is_detailed;
+      var range, applicant, filter, is_detailed;
 
       if (message.text.match(/today/)) {
         range = ZangyoBot.ranges.today;
@@ -234,15 +234,15 @@ controller.on('slash_command', function(bot, message) {
 
       if (message.text.match(/\<\@[a-zA-Z0-9]+\>/g)) {
         applicant = message.text.match(/\<\@[a-zA-Z0-9]+\>/g)[0].slice(2, -1);
-      } else {
-        applicant = null;
       }
+
+      filter = ZangyoBot.filters.approved;
 
       is_detailed = message.text.match(/(detail|details)/) != null;
 
       message.team = message.team_id;
 
-      ZangyoBot.replyList(bot, message, range, applicant, null, is_detailed);
+      ZangyoBot.replyList(bot, message, range, applicant, filter, is_detailed);
       break;
     case 'apply':
       var approver, end_time, reason;
