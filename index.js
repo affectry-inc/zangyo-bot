@@ -294,6 +294,7 @@ controller.on('slash_command', function(bot, message) {
       // message.team = message.team_id;
 
       // ZangyoBot.createApplication(bot, message, approver, end_time, reason);
+      bot.replyPrivate(message, '残業申請するよ！');
       bot.startConversation(message, ZangyoBot.applicationWizard);
       break;
     case 'help':
