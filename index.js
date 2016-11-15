@@ -234,6 +234,8 @@ controller.on('slash_command', function(bot, message) {
 
       if (message.text.match(/\<\@[a-zA-Z0-9]+\>/g)) {
         applicant = message.text.match(/\<\@[a-zA-Z0-9]+\>/g)[0].slice(2, -1);
+      } else {
+        applicant = null;
       }
 
       is_detailed = message.text.match(/(detail|details)/) != null;
