@@ -197,6 +197,8 @@ controller.on('interactive_message_callback', function(bot, message) {
       ZangyoBot.rejectApprove(item_id, bot, message);
     } else if (ans == 'reject-comment') {
       ZangyoBot.rejectCommentApprove(item_id, bot, message);
+    } else if (ans == 'edit-comment') {
+      ZangyoBot.editComment(item_id, bot, message);
     }
   }
 });
