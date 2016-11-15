@@ -29,7 +29,7 @@ var controller = Botkit.slackbot({
   {
     clientId: process.env.clientId,
     clientSecret: process.env.clientSecret,
-    scopes: ['bot','incoming-webhook'],
+    scopes: ['bot','incoming-webhook','commands'],
   }
 );
 
