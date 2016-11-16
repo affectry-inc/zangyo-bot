@@ -283,11 +283,11 @@ controller.on('slash_command', function(bot, message) {
       }
 
       if (message.text.match(/\'.+\'/g)) {
-        end_time = message.text.match(/\'.+\'/g)[0];
+        reason = message.text.match(/\'.+\'/g)[0];
       } else if (message.text.match(/\".+\"/g)) {
-        end_time = message.text.match(/\".+\"/g)[0];
+        reason = message.text.match(/\".+\"/g)[0];
       } else if (message.text.match(/\「.+\」/g)) {
-        end_time = message.text.match(/\「.+\」/g)[0];
+        reason = message.text.match(/\「.+\」/g)[0];
       } else {
         bot.replyPrivate(message, '`Reason` is missing!!');
         return;
