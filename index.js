@@ -299,8 +299,7 @@ controller.on('slash_command', function(bot, message) {
       bot.replyPrivate(message, help_message);
       break;
     default:
-      bot.replyPrivate(message, 'Illegal command!! :ghost:');
-      bot.replyPrivate(message, help_message);
+      bot.replyPrivate(message, 'Illegal command!! :ghost:\n' + help_message);
       break;
   }
 });
