@@ -219,7 +219,7 @@ controller.on('slash_command', function(bot, message) {
         range = ZangyoBot.ranges.today;
       } else if (message.text.match(/day before yesterday/)) {
         range = ZangyoBot.ranges.day_before_yesterday;
-      } else if (message.text.match(/yesterday/)) {
+      } else if (message.text.match(/(yesterday|last night)/)) {
         range = ZangyoBot.ranges.yesterday;
       } else if (message.text.match(/this week/)) {
         range = ZangyoBot.ranges.this_week;
@@ -235,6 +235,9 @@ controller.on('slash_command', function(bot, message) {
         range = ZangyoBot.ranges.last_month;
       } else if (message.text.match(/(1[0-2]|0?[1-9])\/(3[01]|[12][0-9]|0?[1-9])/g)) {
         range = message.text.match(/(1[0-2]|0?[1-9])\/(3[01]|[12][0-9]|0?[1-9])/g)[0];
+      } else if (message.text.match(/(tomorrow|next week|next month|next year)/)) {
+        bot.replyPrivate(message, "God only knows... :hankey:");
+        return;
       } else {
         range = ZangyoBot.ranges.today;
       }
@@ -245,7 +248,7 @@ controller.on('slash_command', function(bot, message) {
 
       if (message.text.match(/(all|applied|application)/)) {
         filter = ZangyoBot.filters.all;
-      } else if (message.text.match(/(last|latest)/)) {
+      } else if (message.text.match(/latest/)) {
         filter = ZangyoBot.filters.last;
       } else {
         filter = ZangyoBot.filters.approved;
