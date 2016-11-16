@@ -268,8 +268,8 @@ controller.on('slash_command', function(bot, message) {
         return;
       }
 
-      if (message.text.match(/\<\@[a-zA-Z0-9]+\>/g)) {
-        approver = message.text.match(/\@[a-zA-Z0-9]+/g)[0].slice(1);
+      if (message.text.match(/\@[a-zA-Z0-9\.\-\_]+/g)) {
+        approver = message.text.match(/\@[a-zA-Z0-9\.\-\_]+/g)[0].slice(1);
       } else {
         bot.replyPrivate(message, '`Approver` is missing!!');
         return;
