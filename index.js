@@ -85,11 +85,11 @@ controller.on('rtm_close',function(bot) {
   // you may want to attempt to re-open
 });
 
-controller.hears('^.*(申請中|未承認).*一覧.*',['direct_message','direct_mention'],function(bot,message) {
+controller.hears('^.*(申請中|未承認).*一覧.*',['direct_message','direct_mention','mention','ambient'],function(bot,message) {
   ZangyoBot.replyPendingList(bot, message);
 });
 
-controller.hears('^.*(残業|申請).*一覧.*',['direct_message','direct_mention'],function(bot,message) {
+controller.hears('^.*(残業|申請).*一覧.*',['direct_message','direct_mention','mention','ambient'],function(bot,message) {
   var range, applicant, filter, is_detailed;
 
   if (message.text.match(/(今日|本日|今夜|今晩)/)) {
@@ -265,7 +265,6 @@ controller.on('slash_command', function(bot, message) {
       //   return;
       // }
 
-      // console.log(JSON.stringify(message));
       // if (message.text.match(/\<\@[a-zA-Z0-9]+\>/g)) {
       //   approver = message.text.match(/\<\@[a-zA-Z0-9]+\>/g)[0].slice(2, -1);
       // } else {
