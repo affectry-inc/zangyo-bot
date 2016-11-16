@@ -261,43 +261,39 @@ controller.on('slash_command', function(bot, message) {
       ZangyoBot.replyList(bot, message, range, applicant, filter, is_detailed);
       break;
     case 'apply':
-      // var approver, end_time, reason;
+      var approver, end_time, reason;
 
-      // if (message.text.match(/help/g)) {
-      //   bot.replyPrivate(message, apply_help);
-      //   return;
-      // }
+      if (message.text.match(/help/g)) {
+        bot.replyPrivate(message, apply_help);
+        return;
+      }
 
-      // if (message.text.match(/\<\@[a-zA-Z0-9]+\>/g)) {
-      //   approver = message.text.match(/\<\@[a-zA-Z0-9]+\>/g)[0].slice(2, -1);
-      // } else {
-      //   bot.replyPrivate(message, '`Approver` is missing!!');
-      //   return;
-      // }
+      if (message.text.match(/\<\@[a-zA-Z0-9]+\>/g)) {
+        approver = message.text.match(/\@[a-zA-Z0-9]+/g)[0].slice(1);
+      } else {
+        bot.replyPrivate(message, '`Approver` is missing!!');
+        return;
+      }
 
-      // if (message.text.match(/([0-2]?[0-9]):([0-5]?[0-9])/g)) {
-      //   end_time = message.text.match(/([0-2]?[0-9]):([0-5]?[0-9])/g)[0];
-      // } else {
-      //   bot.replyPrivate(message, '`End time` is missing!!');
-      //   return;
-      // }
+      if (message.text.match(/([0-2]?[0-9]):([0-5]?[0-9])/g)) {
+        end_time = message.text.match(/([0-2]?[0-9]):([0-5]?[0-9])/g)[0];
+      } else {
+        bot.replyPrivate(message, '`End time` is missing!!');
+        return;
+      }
 
-      // if (message.text.match(/\'.+\'/g)) {
-      //   end_time = message.text.match(/\'.+\'/g)[0];
-      // } else if (message.text.match(/\".+\"/g)) {
-      //   end_time = message.text.match(/\".+\"/g)[0];
-      // } else if (message.text.match(/\「.+\」/g)) {
-      //   end_time = message.text.match(/\「.+\」/g)[0];
-      // } else {
-      //   bot.replyPrivate(message, '`Reason` is missing!!');
-      //   return;
-      // }
+      if (message.text.match(/\'.+\'/g)) {
+        end_time = message.text.match(/\'.+\'/g)[0];
+      } else if (message.text.match(/\".+\"/g)) {
+        end_time = message.text.match(/\".+\"/g)[0];
+      } else if (message.text.match(/\「.+\」/g)) {
+        end_time = message.text.match(/\「.+\」/g)[0];
+      } else {
+        bot.replyPrivate(message, '`Reason` is missing!!');
+        return;
+      }
 
-      // message.team = message.team_id;
-
-      // ZangyoBot.createApplication(bot, message, approver, end_time, reason);
-      bot.replyPrivate(message, '残業申請するよ！');
-      bot.startConversation(message, ZangyoBot.applicationWizard);
+      ZangyoBot.createApplication(bot, message, approver, end_time, reason);
       break;
     case 'help':
       bot.replyPrivate(message, help_message);
