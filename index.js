@@ -203,7 +203,7 @@ controller.on('interactive_message_callback', function(bot, message) {
 
 controller.on('slash_command', function(bot, message) {
   var list_help = "`/zangyo list [today/yesterday/this week] [@xxxxx] [all] [detail]`";
-  var apply_help = "`/zangyo apply` starts the wizard";
+  var apply_help = "`/zangyo apply @approver HH:MM \'reason\'`";
   var help_message = "Use `/zangyo` to apply and browse zangyos for your team.\n Available commands are:\n • " + apply_help + "\n • " + list_help;
 
   switch (message.text.split(' ')[0]) {
