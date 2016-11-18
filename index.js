@@ -24,7 +24,7 @@ if (!process.env.clientId || !process.env.clientSecret || !process.env.port) {
 
 var controller = Botkit.slackbot({
   // interactive_replies: true, // tells botkit to send button clicks into conversations
-  storage: require('botkit-storage-mongo')({mongoUri: MongoUrl})
+  storage: require('./lib/botkit-custom-mongo')({mongoUri: MongoUrl, collections: ['zangyos']})
 }).configureSlackApp(
   {
     clientId: process.env.clientId,
