@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "Zangyo approval app for slack",
   "main": "index.js",
+  "engines": {
+    "node": "6.9.1"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -14,6 +17,8 @@
     "slack",
     "bot",
     "zangyo",
+    "overtime",
+    "overtime work",
     "workflow"
   ],
   "author": "xiz-tky",
