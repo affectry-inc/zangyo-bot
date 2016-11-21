@@ -85,37 +85,37 @@ controller.on('rtm_close',function(bot) {
   // you may want to attempt to re-open
 });
 
-controller.hears('^.*(申請中|未承認).*一覧.*',['direct_message','direct_mention','mention','ambient'],function(bot,message) {
+controller.hears('((?=.*waiting)(?=.*list)|.*(申請中|未承認).*一覧.*)',['direct_message','direct_mention','mention','ambient'],function(bot,message) {
   ZangyoBot.replyPendingList(bot, message);
 });
 
-controller.hears('^.*(残業|申請).*一覧.*',['direct_message','direct_mention','mention','ambient'],function(bot,message) {
+controller.hears('((?=.*(zangyo|application|applied))(?=.*list)|.*(残業|申請).*一覧.*)',['direct_message','direct_mention','mention','ambient'],function(bot,message) {
   var range, applicant, filter, is_detailed;
 
-  if (message.text.match(/(今日|本日|今夜|今晩)/)) {
+  if (message.text.match(/today|tonight|今日|本日|今夜|今晩/)) {
     range = ZangyoBot.ranges.today;
-  } else if (message.text.match(/一昨日/)) {
+  } else if (message.text.match(/day before yesterday|一昨日/)) {
     range = ZangyoBot.ranges.day_before_yesterday;
-  } else if (message.text.match(/(昨日|昨夜|昨晩)/)) {
+  } else if (message.text.match(/yesterday|last night|昨日|昨夜|昨晩/)) {
     range = ZangyoBot.ranges.yesterday;
-  } else if (message.text.match(/今週/)) {
+  } else if (message.text.match(/this week|今週/)) {
     range = ZangyoBot.ranges.this_week;
-  } else if (message.text.match(/先週/)) {
+  } else if (message.text.match(/last week|先週/)) {
     range = ZangyoBot.ranges.last_week;
-  } else if (message.text.match(/(過去一週間|ここ一週間)/)) {
+  } else if (message.text.match(/past (one|1) week|過去(一|１|1)週間|ここ(一|１|1)週間/)) {
     range = ZangyoBot.ranges.past_one_week;
-  } else if (message.text.match(/今月/)) {
+  } else if (message.text.match(/this month|今月/)) {
     range = ZangyoBot.ranges.this_month;
-  } else if (message.text.match(/(先々月|先先月)/)) {
+  } else if (message.text.match(/month before last|先々月|先先月/)) {
     range = ZangyoBot.ranges.month_before_last;
-  } else if (message.text.match(/先月/)) {
+  } else if (message.text.match(/last month|先月/)) {
     range = ZangyoBot.ranges.last_month;
   } else if (message.text.match(/(1[0-2]|0?[1-9])\/(3[01]|[12][0-9]|0?[1-9])/g)) {
     range = message.text.match(/(1[0-2]|0?[1-9])\/(3[01]|[12][0-9]|0?[1-9])/g)[0];
   } else if (message.text.match(/(1[0-2]|0?[1-9])月(3[01]|[12][0-9]|0?[1-9])日/g)) {
     range = message.text.match(/(1[0-2]|0?[1-9])月(3[01]|[12][0-9]|0?[1-9])日/g)[0];
-  } else if (message.text.match(/(明日|明後日|明々後日|来週|再来週|来月|再来月|来年|再来年)/)) {
-    bot.reply(message, "未来のことなどわかるかい！");
+  } else if (message.text.match(/tomorrow|next week|next month|next year|明日|明後日|明々後日|来週|再来週|来月|再来月|来年|再来年/)) {
+    bot.reply(message, 'God only knows... :hankey:');
     return;
   } else {
     range = ZangyoBot.ranges.today;
@@ -125,20 +125,20 @@ controller.hears('^.*(残業|申請).*一覧.*',['direct_message','direct_mentio
     applicant = message.text.match(/\<\@[a-zA-Z0-9]+\>/g)[0].slice(2, -1);
   }
 
-  if (message.text.match(/(全て|全部|申請一覧)/)) {
-    filter = ZangyoBot.filters.all;
-  } else if (message.text.match(/(最後|最終)/)) {
-    filter = ZangyoBot.filters.last;
+  if (message.text.match(/all|applied|application|全て|全部|申請一覧/)) {
+    filter = ZangyoBot.filters.applied;
+  } else if (message.text.match(/latest|最後|最終/)) {
+    filter = ZangyoBot.filters.latest;
   } else {
     filter = ZangyoBot.filters.approved;
   }
 
-  is_detailed = message.text.match(/(詳細|詳しく)/) != null;
+  is_detailed = message.text.match(/detail|details|詳細|詳しく/) != null;
 
   ZangyoBot.replyList(bot, message, range, applicant, filter, is_detailed);
 });
 
-controller.hears('^.*残業.*申請.*',['direct_message','direct_mention'],function(bot,message) {
+controller.hears('(.*apply.*(overtime|zangyo).*|.*残業.*申請.*)',['direct_message','direct_mention'],function(bot,message) {
   bot.startConversation(message, ZangyoBot.applicationWizard);
 });
 
@@ -202,9 +202,9 @@ controller.on('interactive_message_callback', function(bot, message) {
 });
 
 controller.on('slash_command', function(bot, message) {
-  var list_help = "`/zangyo list [today/yesterday/this week] [@xxxxx] [all] [detail]`";
-  var apply_help = "`/zangyo apply @approver HH:MM \'reason\'`";
-  var help_message = "Use `/zangyo` to apply and browse zangyos for your team.\n Available commands are:\n • " + apply_help + "\n • " + list_help;
+  var list_help = '`/zangyo list [today/yesterday/this week] [@xxxxx] [applied] [detail]`';
+  var apply_help = '`/zangyo apply @approver HH:MM \'reason\'`';
+  var help_message = 'Use `/zangyo` to apply and browse zangyos for your team.\n Available commands are:\n • ' + apply_help + '\n • ' + list_help;
 
   switch (message.text.split(' ')[0]) {
     case 'list':
@@ -225,7 +225,7 @@ controller.on('slash_command', function(bot, message) {
         range = ZangyoBot.ranges.this_week;
       } else if (message.text.match(/last week/)) {
         range = ZangyoBot.ranges.last_week;
-      } else if (message.text.match(/past one week/)) {
+      } else if (message.text.match(/past (one|1) week/)) {
         range = ZangyoBot.ranges.past_one_week;
       } else if (message.text.match(/this month/)) {
         range = ZangyoBot.ranges.this_month;
@@ -236,7 +236,7 @@ controller.on('slash_command', function(bot, message) {
       } else if (message.text.match(/(1[0-2]|0?[1-9])\/(3[01]|[12][0-9]|0?[1-9])/g)) {
         range = message.text.match(/(1[0-2]|0?[1-9])\/(3[01]|[12][0-9]|0?[1-9])/g)[0];
       } else if (message.text.match(/(tomorrow|next week|next month|next year)/)) {
-        bot.replyPrivate(message, "God only knows... :hankey:");
+        bot.replyPrivate(message, 'God only knows... :hankey:');
         return;
       } else {
         range = ZangyoBot.ranges.today;
@@ -247,9 +247,9 @@ controller.on('slash_command', function(bot, message) {
       }
 
       if (message.text.match(/(all|applied|application)/)) {
-        filter = ZangyoBot.filters.all;
+        filter = ZangyoBot.filters.applied;
       } else if (message.text.match(/latest/)) {
-        filter = ZangyoBot.filters.last;
+        filter = ZangyoBot.filters.latest;
       } else {
         filter = ZangyoBot.filters.approved;
       }
