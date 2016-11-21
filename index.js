@@ -245,8 +245,8 @@ controller.on('slash_command', function(bot, message) {
         range = ZangyoBot.ranges.today;
       }
 
-      if (message.text.match(/\<\@[a-zA-Z0-9]+\>/g)) {
-        applicant = message.text.match(/\<\@[a-zA-Z0-9]+\>/g)[0].slice(2, -1);
+      if (message.text.match(/\@[a-zA-Z0-9\.\-\_]+/g)) {
+        applicant = message.text.match(/\@[a-zA-Z0-9\.\-\_]+/g)[0].slice(1);
       }
 
       if (message.text.match(/(all|applied|application)/)) {
@@ -261,7 +261,11 @@ controller.on('slash_command', function(bot, message) {
 
       message.team = message.team_id;
 
-      ZangyoBot.replyList(bot, message, range, applicant, filter, is_detailed);
+      if (applicant) {
+        ZangyoBot.replyListByName(bot, message, range, applicant, filter, is_detailed);
+      } else {
+        ZangyoBot.replyList(bot, message, range, null, filter, is_detailed);
+      }
       break;
     case 'apply':
       var approver, end_time, reason;
