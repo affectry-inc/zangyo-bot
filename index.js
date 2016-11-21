@@ -260,6 +260,7 @@ controller.on('slash_command', function(bot, message) {
       is_detailed = message.text.match(/(detail|details)/) != null;
 
       message.team = message.team_id;
+      message.user = message.user_id;
 
       if (applicant) {
         ZangyoBot.replyListByName(bot, message, range, applicant, filter, is_detailed);
