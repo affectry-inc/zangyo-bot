@@ -91,6 +91,8 @@ controller.hears('((?=.*waiting)(?=.*list)|.*(申請中|未承認).*一覧.*)',[
 });
 
 controller.hears('((?=.*(zangyo|application|applied))(?=.*list)|.*(残業|申請).*一覧.*)',['direct_message','direct_mention','mention','ambient'],function(bot,message) {
+  if (message.text.match(/^\//)) return; // Avoid slash_command
+
   var range, applicant, filter, is_detailed;
 
   if (message.text.match(/today|tonight|今日|本日|今夜|今晩/)) {
@@ -271,16 +273,10 @@ controller.on('slash_command', function(bot, message) {
 
       if (message.text.match(/\@[a-zA-Z0-9\.\-\_]+/g)) {
         approver = message.text.match(/\@[a-zA-Z0-9\.\-\_]+/g)[0].slice(1);
-      } else {
-        bot.replyPrivate(message, '`Approver` is missing!!');
-        return;
       }
 
       if (message.text.match(/([0-2]?[0-9]):([0-5]?[0-9])/g)) {
         end_time = message.text.match(/([0-2]?[0-9]):([0-5]?[0-9])/g)[0];
-      } else {
-        bot.replyPrivate(message, '`End time` is missing!!');
-        return;
       }
 
       if (message.text.match(/\'.+\'/g)) {
@@ -289,8 +285,10 @@ controller.on('slash_command', function(bot, message) {
         reason = message.text.match(/\".+\"/g)[0].slice(1,-1);
       } else if (message.text.match(/\「.+\」/g)) {
         reason = message.text.match(/\「.+\」/g)[0].slice(1,-1);
-      } else {
-        bot.replyPrivate(message, '`Reason` is missing!!');
+      }
+
+      if (!approver || !end_time || !reason) {
+        bot.replyPrivate(message, 'The format must be ' + apply_help);
         return;
       }
 
