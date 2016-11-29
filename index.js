@@ -68,8 +68,8 @@ controller.on('create_bot',function(bot,config) {
         if (err) {
           console.log(err);
         } else {
-          convo.say('I am a bot that has just joined your team');
-          convo.say('You must now /invite me to a channel so that I can be of use!');
+          convo.say('Konnichiwa!! I am Zangyobot that has just joined your team. :robot_face:');
+          convo.say('Please /invite me to a channel so that I can be of use!');
         }
       });
     });
@@ -105,6 +105,8 @@ controller.hears('((?=.*(zangyo|application|applied))(?=.*list)|.*(残業|申請
     range = ZangyoBot.ranges.this_week;
   } else if (message.text.match(/last week|先週/)) {
     range = ZangyoBot.ranges.last_week;
+  } else if (message.text.match(/week before last|先々週|先先週/)) {
+    range = ZangyoBot.ranges.week_before_last;
   } else if (message.text.match(/past (one|1) week|過去(一|１|1)週間|ここ(一|１|1)週間/)) {
     range = ZangyoBot.ranges.past_one_week;
   } else if (message.text.match(/this month|今月/)) {
@@ -228,6 +230,8 @@ controller.on('slash_command', function(bot, message) {
         range = ZangyoBot.ranges.this_week;
       } else if (message.text.match(/last week/)) {
         range = ZangyoBot.ranges.last_week;
+      } else if (message.text.match(/week before last/)) {
+        range = ZangyoBot.ranges.week_before_last;
       } else if (message.text.match(/past (one|1) week/)) {
         range = ZangyoBot.ranges.past_one_week;
       } else if (message.text.match(/this month/)) {
