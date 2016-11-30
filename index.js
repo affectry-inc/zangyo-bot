@@ -130,10 +130,10 @@ controller.hears('((?=.*(zangyo|application|applied))(?=.*list)|.*(残業|申請
     applicant = message.text.match(/\<\@[a-zA-Z0-9]+\>/g)[0].slice(2, -1);
   }
 
-  if (message.text.match(/all|applied|application|全て|全部|申請一覧/)) {
-    filter = ZangyoBot.filters.applied;
-  } else if (message.text.match(/latest|最後|最終/)) {
+  if (message.text.match(/latest|最後|最終/)) {
     filter = ZangyoBot.filters.latest;
+  } else if (message.text.match(/all|applied|application|全て|全部|申請一覧/)) {
+    filter = ZangyoBot.filters.applied;
   } else {
     filter = ZangyoBot.filters.approved;
   }
@@ -273,10 +273,10 @@ controller.on('slash_command', function(bot, message) {
         applicant = message.text.match(/\@[a-zA-Z0-9\.\-\_]+/g)[0].slice(1);
       }
 
-      if (message.text.match(/(all|applied|application)/)) {
-        filter = ZangyoBot.filters.applied;
-      } else if (message.text.match(/latest/)) {
+      if (message.text.match(/latest/)) {
         filter = ZangyoBot.filters.latest;
+      } else if (message.text.match(/(all|applied|application)/)) {
+        filter = ZangyoBot.filters.applied;
       } else {
         filter = ZangyoBot.filters.approved;
       }
