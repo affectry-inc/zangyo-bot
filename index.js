@@ -122,6 +122,9 @@ controller.hears('((?=.*(zangyo|application|applied))(?=.*list)|.*(残業|申請
   } else if (message.text.match(/tomorrow|next week|next month|next year|明日|明後日|明々後日|来週|再来週|来月|再来月|来年|再来年/)) {
     bot.reply(message, 'God only knows... :hankey:');
     return;
+  } else if (message.text.match(/year before last|last year|this year|next year|year after next|一昨年|去年|今年|来年|再来年/)) {
+    bot.reply(message, 'Too big range!! Modify it to be smaller than monthly... :hankey:');
+    return;
   } else {
     range = ZangyoBot.ranges.today;
   }
@@ -264,6 +267,9 @@ controller.on('slash_command', function(bot, message) {
         range = message.text.match(/(1[0-2]|0?[1-9])\/(3[01]|[12][0-9]|0?[1-9])/g)[0];
       } else if (message.text.match(/(tomorrow|next week|next month|next year)/)) {
         bot.replyPrivate(message, 'God only knows... :hankey:');
+        return;
+      } else if (message.text.match(/year before last|last year|this year|next year|year after next/)) {
+        bot.replyPrivate(message, 'Too big range!! Modify it to be smaller than monthly... :hankey:');
         return;
       } else {
         range = ZangyoBot.ranges.today;
