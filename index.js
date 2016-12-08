@@ -158,15 +158,15 @@ controller.hears('((?=.*(zangyo|application|applied))(?=.*list)|.*(残業|申請
 });
 
 controller.hears('(.*apply.*(overtime|zangyo).*|.*残業.*申請.*)',['direct_message','direct_mention'],function(bot,message) {
-  bot.startConversation(message, ZangyoBot.zangyoWizard);
+  ZangyoBot.zangyoWizard(bot, message);
 });
 
 controller.hears('(.*apply.*morning.*|.*朝.*(出勤|勤務).*申請.*)',['direct_message','direct_mention'],function(bot,message) {
-  bot.startConversation(message, ZangyoBot.morningWorkWizard);
+  ZangyoBot.morningWorkWizard(bot, message);
 });
 
 controller.hears('(.*apply.*holiday.*|.*(休日|土曜|日曜|祝日).*(出勤|勤務).*申請.*)',['direct_message','direct_mention'],function(bot,message) {
-  bot.startConversation(message, ZangyoBot.holidayWorkWizard);
+  ZangyoBot.holidayWorkWizard(bot, message);
 });
 
 controller.hears('(.*apply.*(unapplied|past).*|.*事後.*申請.*)',['direct_message','direct_mention'],function(bot,message) {
@@ -215,11 +215,11 @@ controller.on('interactive_message_callback', function(bot, message) {
 
   if (action == 'delay_apply') {
     if (ans == 'night') {
-      bot.startConversation(message, ZangyoBot.zangyoWizardDelay);
+      ZangyoBot.zangyoWizardDelay(bot, message);
     } else if (ans == 'morning') {
-      bot.startConversation(message, ZangyoBot.morningWorkWizardDelay);
+      ZangyoBot.morningWorkWizardDelay(bot, message);
     } else if (ans == 'holiday') {
-      bot.startConversation(message, ZangyoBot.holidayWorkWizardDelay);
+      ZangyoBot.holidayWorkWizardDelay(bot, message);
     }
   } else if (action == 'apply') {
     if (ans == 'apply') {
