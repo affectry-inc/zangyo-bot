@@ -103,10 +103,10 @@ controller.hears('((?=.*(zangyo|application|applied))(?=.*list)|.*(残業|申請
     range = ZangyoBot.ranges.yesterday;
   } else if (message.text.match(/this week|今週/)) {
     range = ZangyoBot.ranges.this_week;
-  } else if (message.text.match(/last week|先週/)) {
-    range = ZangyoBot.ranges.last_week;
   } else if (message.text.match(/week before last|先々週|先先週/)) {
     range = ZangyoBot.ranges.week_before_last;
+  } else if (message.text.match(/last week|先週/)) {
+    range = ZangyoBot.ranges.last_week;
   } else if (message.text.match(/past (one|1) week|過去(一|１|1)週間|ここ(一|１|1)週間/)) {
     range = ZangyoBot.ranges.past_one_week;
   } else if (message.text.match(/this month|今月/)) {
@@ -115,13 +115,24 @@ controller.hears('((?=.*(zangyo|application|applied))(?=.*list)|.*(残業|申請
     range = ZangyoBot.ranges.month_before_last;
   } else if (message.text.match(/last month|先月/)) {
     range = ZangyoBot.ranges.last_month;
+  } else if (message.text.match(/two days after tomorrow|2 days after tomorrow|明々後日/)) {
+    range = ZangyoBot.ranges.two_days_after_tomorrow;
+  } else if (message.text.match(/day after tomorrow|明後日/)) {
+    range = ZangyoBot.ranges.day_after_tomorrow;
+  } else if (message.text.match(/tomorrow|明日/)) {
+    range = ZangyoBot.ranges.tomorrow;
+  } else if (message.text.match(/week after next|再来週/)) {
+    range = ZangyoBot.ranges.week_after_next;
+  } else if (message.text.match(/next week|来週/)) {
+    range = ZangyoBot.ranges.next_week;
+  } else if (message.text.match(/month after next|再来月/)) {
+    range = ZangyoBot.ranges.month_after_next;
+  } else if (message.text.match(/next month|来月/)) {
+    range = ZangyoBot.ranges.next_month;
   } else if (message.text.match(/(1[0-2]|0?[1-9])\/(3[01]|[12][0-9]|0?[1-9])/g)) {
     range = message.text.match(/(1[0-2]|0?[1-9])\/(3[01]|[12][0-9]|0?[1-9])/g)[0];
   } else if (message.text.match(/(1[0-2]|0?[1-9])月(3[01]|[12][0-9]|0?[1-9])日/g)) {
     range = message.text.match(/(1[0-2]|0?[1-9])月(3[01]|[12][0-9]|0?[1-9])日/g)[0];
-  } else if (message.text.match(/tomorrow|next week|next month|next year|明日|明後日|明々後日|来週|再来週|来月|再来月|来年|再来年/)) {
-    bot.reply(message, 'God only knows... :hankey:');
-    return;
   } else if (message.text.match(/year before last|last year|this year|next year|year after next|一昨年|去年|今年|来年|再来年/)) {
     bot.reply(message, 'Too big range!! Modify it to be smaller than monthly... :hankey:');
     return;
@@ -263,11 +274,22 @@ controller.on('slash_command', function(bot, message) {
         range = ZangyoBot.ranges.month_before_last;
       } else if (message.text.match(/last month/)) {
         range = ZangyoBot.ranges.last_month;
+      } else if (message.text.match(/two days after tomorrow|2 days after tomorrow/)) {
+        range = ZangyoBot.ranges.two_days_after_tomorrow;
+      } else if (message.text.match(/day after tomorrow/)) {
+        range = ZangyoBot.ranges.day_after_tomorrow;
+      } else if (message.text.match(/tomorrow/)) {
+        range = ZangyoBot.ranges.tomorrow;
+      } else if (message.text.match(/week after next/)) {
+        range = ZangyoBot.ranges.week_after_next;
+      } else if (message.text.match(/next week/)) {
+        range = ZangyoBot.ranges.next_week;
+      } else if (message.text.match(/month after next/)) {
+        range = ZangyoBot.ranges.month_after_next;
+      } else if (message.text.match(/next month/)) {
+        range = ZangyoBot.ranges.next_month;
       } else if (message.text.match(/(1[0-2]|0?[1-9])\/(3[01]|[12][0-9]|0?[1-9])/g)) {
         range = message.text.match(/(1[0-2]|0?[1-9])\/(3[01]|[12][0-9]|0?[1-9])/g)[0];
-      } else if (message.text.match(/(tomorrow|next week|next month|next year)/)) {
-        bot.replyPrivate(message, 'God only knows... :hankey:');
-        return;
       } else if (message.text.match(/year before last|last year|this year|next year|year after next/)) {
         bot.replyPrivate(message, 'Too big range!! Modify it to be smaller than monthly... :hankey:');
         return;
