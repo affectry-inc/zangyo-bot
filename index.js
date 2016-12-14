@@ -86,14 +86,32 @@ controller.on('rtm_close',function(bot) {
   // you may want to attempt to re-open
 });
 
-controller.hears('((?=.*waiting)(?=.*list)|.*(申請中|未承認).*一覧.*)',['direct_message','direct_mention','mention','ambient'],function(bot,message) {
+controller.hears('((?=.*waiting)(?=.*list)|.*(申請中|未承認).*一覧.*)',['direct_message','direct_mention','mention'],function(bot,message) {
   ZangyoBot.replyPendingList(bot, message);
 });
 
-controller.hears('((?=.*(zangyo|application|applied))(?=.*list)|.*(残業|申請).*一覧.*)',['direct_message','direct_mention','mention','ambient'],function(bot,message) {
+controller.hears('((?=.*(zangyo|night|morning|holiday|application|applied))(?=.*list)|.*(残業|早朝|休日|申請).*一覧.*)',['direct_message','direct_mention','mention'],function(bot,message) {
   if (message.text.match(/^\//)) return; // Avoid slash_command
 
-  var range, applicant, filter, is_detailed;
+  var range, applicant, filter, period, is_detailed;
+
+  range = findRange(message);
+
+  if (message.text.match(/\<\@[a-zA-Z0-9]+\>/g)) {
+    applicant = message.text.match(/\<\@[a-zA-Z0-9]+\>/g)[0].slice(2, -1);
+  }
+
+  filter = findFilter(message);
+
+  period = findPeriod(message);
+
+  is_detailed = message.text.match(/detail|details|詳細|詳しく/) != null;
+
+  ZangyoBot.replyList(bot, message, range, applicant, filter, period, is_detailed);
+});
+
+function findRange(message) {
+  var range;
 
   if (message.text.match(/today|tonight|今日|本日|今夜|今晩/)) {
     range = ZangyoBot.ranges.today;
@@ -140,22 +158,34 @@ controller.hears('((?=.*(zangyo|application|applied))(?=.*list)|.*(残業|申請
     range = ZangyoBot.ranges.today;
   }
 
-  if (message.text.match(/\<\@[a-zA-Z0-9]+\>/g)) {
-    applicant = message.text.match(/\<\@[a-zA-Z0-9]+\>/g)[0].slice(2, -1);
-  }
+  return range;
+};
+
+function findFilter(message) {
+  var filter;
 
   if (message.text.match(/latest|最後|最終/)) {
     filter = ZangyoBot.filters.latest;
-  } else if (message.text.match(/all|applied|application|全て|全部|申請一覧/)) {
+  } else if (message.text.match(/all|applied|application|全て|全部|申請/)) {
     filter = ZangyoBot.filters.applied;
   } else {
     filter = ZangyoBot.filters.approved;
   }
 
-  is_detailed = message.text.match(/detail|details|詳細|詳しく/) != null;
+  return filter;
+};
 
-  ZangyoBot.replyList(bot, message, range, applicant, filter, is_detailed);
-});
+function findPeriod(message) {
+  if (message.text.match(/morning|早朝/)) {
+    return ZangyoBot.periods.morning;
+  } else if (message.text.match(/night|zangyo|残業/)) {
+    return ZangyoBot.periods.night;
+  } else if (message.text.match(/holiday|休日/)) {
+    return ZangyoBot.periods.holiday;
+  } else {
+    return null;
+  }
+};
 
 controller.hears('(.*apply.*(overtime|zangyo).*|.*残業.*申請.*)',['direct_message','direct_mention'],function(bot,message) {
   ZangyoBot.zangyoWizard(bot, message);
@@ -247,67 +277,22 @@ controller.on('slash_command', function(bot, message) {
 
   switch (message.text.split(' ')[0]) {
     case 'list':
-      var range, applicant, filter, is_detailed;
+      var range, applicant, filter, period, is_detailed;
 
       if (message.text.match(/help/g)) {
         bot.replyPrivate(message, list_help);
         return;
       }
 
-      if (message.text.match(/today/)) {
-        range = ZangyoBot.ranges.today;
-      } else if (message.text.match(/day before yesterday/)) {
-        range = ZangyoBot.ranges.day_before_yesterday;
-      } else if (message.text.match(/(yesterday|last night)/)) {
-        range = ZangyoBot.ranges.yesterday;
-      } else if (message.text.match(/this week/)) {
-        range = ZangyoBot.ranges.this_week;
-      } else if (message.text.match(/last week/)) {
-        range = ZangyoBot.ranges.last_week;
-      } else if (message.text.match(/week before last/)) {
-        range = ZangyoBot.ranges.week_before_last;
-      } else if (message.text.match(/past (one|1) week/)) {
-        range = ZangyoBot.ranges.past_one_week;
-      } else if (message.text.match(/this month/)) {
-        range = ZangyoBot.ranges.this_month;
-      } else if (message.text.match(/month before last/)) {
-        range = ZangyoBot.ranges.month_before_last;
-      } else if (message.text.match(/last month/)) {
-        range = ZangyoBot.ranges.last_month;
-      } else if (message.text.match(/two days after tomorrow|2 days after tomorrow/)) {
-        range = ZangyoBot.ranges.two_days_after_tomorrow;
-      } else if (message.text.match(/day after tomorrow/)) {
-        range = ZangyoBot.ranges.day_after_tomorrow;
-      } else if (message.text.match(/tomorrow/)) {
-        range = ZangyoBot.ranges.tomorrow;
-      } else if (message.text.match(/week after next/)) {
-        range = ZangyoBot.ranges.week_after_next;
-      } else if (message.text.match(/next week/)) {
-        range = ZangyoBot.ranges.next_week;
-      } else if (message.text.match(/month after next/)) {
-        range = ZangyoBot.ranges.month_after_next;
-      } else if (message.text.match(/next month/)) {
-        range = ZangyoBot.ranges.next_month;
-      } else if (message.text.match(/(1[0-2]|0?[1-9])\/(3[01]|[12][0-9]|0?[1-9])/g)) {
-        range = message.text.match(/(1[0-2]|0?[1-9])\/(3[01]|[12][0-9]|0?[1-9])/g)[0];
-      } else if (message.text.match(/year before last|last year|this year|next year|year after next/)) {
-        bot.replyPrivate(message, 'Too big range!! Modify it to be smaller than monthly... :hankey:');
-        return;
-      } else {
-        range = ZangyoBot.ranges.today;
-      }
+      range = findRange(message);
 
       if (message.text.match(/\@[a-zA-Z0-9\.\-\_]+/g)) {
         applicant = message.text.match(/\@[a-zA-Z0-9\.\-\_]+/g)[0].slice(1);
       }
 
-      if (message.text.match(/latest/)) {
-        filter = ZangyoBot.filters.latest;
-      } else if (message.text.match(/(all|applied|application)/)) {
-        filter = ZangyoBot.filters.applied;
-      } else {
-        filter = ZangyoBot.filters.approved;
-      }
+      filter = findFilter(message);
+
+      period = findPeriod(message);
 
       is_detailed = message.text.match(/(detail|details)/) != null;
 
@@ -315,9 +300,9 @@ controller.on('slash_command', function(bot, message) {
       message.user = message.user_id;
 
       if (applicant) {
-        ZangyoBot.replyListByName(bot, message, range, applicant, filter, is_detailed);
+        ZangyoBot.replyListByName(bot, message, range, applicant, filter, period, is_detailed);
       } else {
-        ZangyoBot.replyList(bot, message, range, null, filter, is_detailed);
+        ZangyoBot.replyList(bot, message, range, null, filter, period, is_detailed);
       }
       break;
     case 'apply':
