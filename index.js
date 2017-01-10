@@ -96,6 +96,10 @@ controller.hears('((?=.*(zangyo|night|morning|holiday|application|applied))(?=.*
   var range, applicant, filter, period, is_detailed;
 
   range = findRange(message);
+  if (!range) {
+    bot.reply(message, 'Too big range!! Modify it to be smaller than monthly... :hankey:');
+    return;
+  }
 
   if (message.text.match(/\<\@[a-zA-Z0-9]+\>/g)) {
     applicant = message.text.match(/\<\@[a-zA-Z0-9]+\>/g)[0].slice(2, -1);
@@ -152,8 +156,7 @@ function findRange(message) {
   } else if (message.text.match(/(1[0-2]|0?[1-9])月(3[01]|[12][0-9]|0?[1-9])日/g)) {
     range = message.text.match(/(1[0-2]|0?[1-9])月(3[01]|[12][0-9]|0?[1-9])日/g)[0];
   } else if (message.text.match(/year before last|last year|this year|next year|year after next|一昨年|去年|今年|来年|再来年/)) {
-    bot.reply(message, 'Too big range!! Modify it to be smaller than monthly... :hankey:');
-    return;
+    range = null;
   } else {
     range = ZangyoBot.ranges.today;
   }
@@ -285,6 +288,10 @@ controller.on('slash_command', function(bot, message) {
       }
 
       range = findRange(message);
+      if (!range) {
+        bot.reply(message, 'Too big range!! Modify it to be smaller than monthly... :hankey:');
+        return;
+      }
 
       if (message.text.match(/\@[a-zA-Z0-9\.\-\_]+/g)) {
         applicant = message.text.match(/\@[a-zA-Z0-9\.\-\_]+/g)[0].slice(1);
